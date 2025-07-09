@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Production Server | Hello from Flask in Docker!"
+    return "Staging Server | Hello from Flask in Docker!"
 
 
 # if __name__ == "__main__":

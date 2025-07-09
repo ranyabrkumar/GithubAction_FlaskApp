@@ -7,49 +7,40 @@ on:
     types: [created]
 
 jobs:
-  build-test:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - run: pip install -r requirements.txt
-      - run: pytest
+    build-test:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+                with:
+                    python-version: '3.10'
+            - run: pip install -r requirements.txt
+            - run: pytest
 
-  deploy-staging:
-    needs: build-test
-    if: github.ref_name == 'staging' && github.event_name == 'push'
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to Staging
-        env:
-          STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
-        run: |
-          echo "Deploying to staging..."
-          nohup python app.py deploy --env staging &
-          echo "Staging deployment complete."
+    deploy-staging:
+        needs: build-test
+        if: github.ref == 'refs/heads/staging'
+        runs-on: self-hosted
+        steps:
+            - name: Deploy to Staging
+                run: echo "Deploying to staging..."
+                env:
+                    STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
 
-  deploy-production:
-    needs: build-test
-    if: github.ref_name == 'main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    deploy-production:
+        needs: build-test
+        if: github.event_name == 'release'
+        runs-on: self-hosted
+        steps:
+            - name: Deploy to Production
+               
+                env:
+                    PROD_SECRET: ${{ secrets.PROD_SECRET }}
+                - name: Deploy to EC2
+                run: |
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ec2-34-220-116-134.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com pip install -r requirements.txt nohup python app.py --env production > log.txt 2>&1 &'
+                env:
+                    PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
 
-      - name: Deploy to EC2
-        run: |
-          ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
-            pip install -r requirements.txt
-            sleep 5
-            nohup python app.py deploy --env production &
-            cat nohup,out
-            echo "App deployed on EC2"
-          EOF
+

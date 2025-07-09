@@ -55,8 +55,10 @@ jobs:
             # git pull origin main
 
             echo "Installing Python dependencies..."
-            pip3 install --upgrade pip
+            python3 -m venv venv
+            source venv/bin/activate
             pip3 install -r requirements.txt
+
 
             echo "Stopping existing Gunicorn process if any..."
             pkill gunicorn || true

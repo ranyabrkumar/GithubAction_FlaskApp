@@ -61,9 +61,10 @@ jobs:
             pkill gunicorn || true
 
             echo "Starting app using Gunicorn..."
-            nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon > logs.txt
 
             echo "Deployment complete. Showing logs:"
+            cat  logs.txt
             sleep 2
             tail -n 20 nohup.out || echo "No log output yet."
           EOF

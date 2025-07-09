@@ -1,42 +1,47 @@
-name: CI/CD Pipeline
+vname: CI/CD Pipeline
+
 on:
-    push:
-        branches: [main, staging]
-    release:
-        types: [created]
+  push:
+    branches: [main, staging]
+  release:
+    types: [created]
 
 jobs:
-    build-test:
-        runs-on: self-hosted
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-python@v5
-                with:
-                    python-version: '3.10'
-            - run: pip install -r requirements.txt
-            - run: pytest
+  build-test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: pip install -r requirements.txt
+      - run: pytest
 
-    deploy-staging:
-        needs: build-test
-        if: github.ref == 'refs/heads/staging'
-        runs-on: self-hosted
-        steps:
-            - name: Deploy to Staging
-                run: echo "Deploying to staging..."
-                env:
-                    STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
+  deploy-staging:
+    needs: build-test
+    if: github.ref_name == 'staging' && github.event_name == 'push'
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Staging
+        env:
+          STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
+        run: |
+          echo "Deploying to staging..."
+          nohup python app.py deploy --env staging &
+          echo "Staging deployment complete."
 
-    deploy-production:
-        needs: build-test
-        if: github.event_name == 'release'
-        runs-on: self-hosted
-        steps:
-            - name: Deploy to Production
-               
-                env:
-                    PROD_SECRET: ${{ secrets.PROD_SECRET }}
-                - name: Deploy to EC2
-                run: |
-                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com nohup python app.py --env production > log.txt 2>&1 &'
-                env:
-                    PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+  deploy-production:
+    needs: build-test
+    if: github.ref_name == 'main' && github.event_name == 'push'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Production
+        env:
+          PROD_SECRET: ${{ secrets.PROD_SECRET }}
+        run: |
+          echo "Deploying to production..."
+          cd ${{ github.workspace }}
+          pip install -r requirements.txt
+          nohup python app.py deploy --env production &
+          echo "Production deployment complete."

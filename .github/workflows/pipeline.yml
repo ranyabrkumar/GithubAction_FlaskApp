@@ -1,4 +1,4 @@
-vname: CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -33,15 +33,25 @@ jobs:
   deploy-production:
     needs: build-test
     if: github.ref_name == 'main' && github.event_name == 'push'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to Production
-        env:
-          PROD_SECRET: ${{ secrets.PROD_SECRET }}
+
+      - name: Set up SSH
         run: |
-          echo "Deploying to production..."
-          cd ${{ github.workspace }}
-          pip install -r requirements.txt
-          nohup python app.py deploy --env production &
-          echo "Production deployment complete."
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ec2-34-220-116-134.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
+            set -e
+            cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app && cd ~/flask-app
+            git pull origin main
+            pip3 install -r requirements.txt
+            pkill gunicorn || true
+            nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            echo "App deployed on EC2"
+          EOF

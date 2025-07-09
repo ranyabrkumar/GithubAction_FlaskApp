@@ -52,4 +52,5 @@ jobs:
                 echo "Production deployment complete."
                 ps aux | grep app.py
                 tail -f nohup.out
+                exit o
     

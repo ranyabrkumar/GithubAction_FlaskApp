@@ -22,9 +22,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to Staging
-                run: echo "Deploying to staging..."
-                env:
-                    STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
+              run: echo "Deploying to staging..."
+              env:
+                STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
 
     deploy-production:
         needs: build-test
@@ -32,6 +32,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to Production
-                run: echo "Deploying to production..."
-                env:
-                    PROD_SECRET: ${{ secrets.PROD_SECRET }}
+              run: echo "Deploying to production..."
+              env:
+                PROD_SECRET: ${{ secrets.PROD_SECRET }}

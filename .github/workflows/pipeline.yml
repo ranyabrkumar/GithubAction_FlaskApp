@@ -47,11 +47,8 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
-            set -e
-            cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app && cd ~/flask-app
-            git pull origin main
-            pip3 install -r requirements.txt
-            pkill gunicorn || true
-            nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            
+            nohup python app.py &
+            cat nohup,out
             echo "App deployed on EC2"
           EOF

@@ -1,4 +1,4 @@
-name: CICD Pipeline
+name: CI/CD Pipeline
 on:
     push:
         branches: [main, staging]
@@ -11,8 +11,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-python@v5
-                with:
-                    python-version: '3.10'
+              with:
+                python-version: '3.10'
             - run: pip install -r requirements.txt
             - run: pytest
 

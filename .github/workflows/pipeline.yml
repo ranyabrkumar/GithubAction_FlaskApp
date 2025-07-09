@@ -42,8 +42,8 @@ jobs:
 
             echo "Entering project directory..."
             
-            cd ~/flask-app
-            git checkout -b staging
+            cd ~/actions-runner/_work/GithubAction_FlaskApp/GithubAction_FlaskApp
+            git checkout staging
             git pull origin/staging
             echo "============================================="
             echo "Setting up Python environment..."
@@ -110,8 +110,9 @@ jobs:
 
             echo "Entering project directory..."
             
-            cd ~/flask-app
-            git pull
+            cd ~/actions-runner/_work/GithubAction_FlaskApp/GithubAction_FlaskApp
+            git checkout main
+            git pull origin/main
             echo "============================================="
             echo "Setting up Python environment..."
             echo "============================================="

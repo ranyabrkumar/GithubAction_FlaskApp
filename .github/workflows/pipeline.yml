@@ -31,7 +31,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ec2-54-188-9-224.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-      - name: Deploy and Setup EC2
+      - name: Staging Deploy and Setup EC2
         run: |
           ssh ubuntu@ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
             set -e

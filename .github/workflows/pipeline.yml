@@ -43,7 +43,8 @@ jobs:
             echo "Entering project directory..."
             
             cd ~/flask-app
-            git pull origin/staging
+            git checkout -b staging
+            git pull
             echo "============================================="
             echo "Setting up Python environment..."
             echo "============================================="

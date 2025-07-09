@@ -30,7 +30,7 @@ jobs:
   deploy-production:
     needs: build-test
     if: github.ref_name == 'main'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
@@ -43,33 +43,43 @@ jobs:
 
       - name: Deploy and Setup EC2
         run: |
-          ssh ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
+          ssh ubuntu@ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
             set -e
 
             echo "Updating system packages..."
             sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
-            cd flask-app
-            ls -lrta
 
-            echo "Installing Python dependencies..."
+            echo "Entering project directory..."
+            cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app && cd ~/flask-app
+            git pull origin main
+
+            echo "Setting up Python environment..."
             python3 -m venv venv
             source venv/bin/activate
-            pip3 install -r requirements.txt
+            pip install --upgrade pip
+            pip install -r requirements.txt
 
-
-            echo "Stopping existing Gunicorn process if any..."
+            echo "Stopping Gunicorn if running..."
             pkill gunicorn || true
-            if ! curl --fail http://localhost:5000/; then
-              echo "App not reachable. Proceeding ..."
-              # next command goes here
+
+            echo " Checking if app is down before restart..."
+            if ! curl --silent --fail http://localhost:5000/; then
+              echo " App not reachable. Safe to restart."
+            else
+              echo "App still reachable, continuing deployment anyway."
             fi
 
-            echo "Starting app using Gunicorn..."
+            echo "Starting Gunicorn..."
             nohup venv/bin/gunicorn app:app --bind 0.0.0.0:5000 > logs.txt 2>&1 &
 
-            echo "Deployment complete. Showing logs:"
-            curl http://localhost:5000/
+            echo " Waiting for app to start..."
+            sleep 5
 
+            echo "Health check:"
+            curl --fail http://localhost:5000/ || echo "❌ App not responding"
+
+            echo "📄 Last 10 lines of log:"
+            tail -n 10 logs.txt || echo "No logs found."
           EOF
         env:
           PROD_SECRET: ${{ secrets.PROD_SECRET }}

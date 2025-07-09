@@ -59,13 +59,12 @@ jobs:
 
             echo "Stopping existing Gunicorn process if any..."
             pkill gunicorn || true
-
+            curl -x get http://34.220.116.134:5000/
             echo "Starting app using Gunicorn..."
             nohup venv/bin/gunicorn app:app --bind 0.0.0.0:5000 > logs.txt 2>&1 &
 
             echo "Deployment complete. Showing logs:"
-            cat  logs.txt
-            ls -lrta
+            curl -x get http://34.220.116.134:5000/
           EOF
         env:
           PROD_SECRET: ${{ secrets.PROD_SECRET }}

@@ -28,45 +28,45 @@ jobs:
           STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
 
   deploy-production:
-  needs: build-test
-  if: github.ref_name == 'main'
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
+    needs: build-test
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ec2-34-220-116-134.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ec2-34-220-116-134.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-    - name: Deploy and Setup EC2
-      run: |
-        ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
-          set -e
+      - name: Deploy and Setup EC2
+        run: |
+          ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
+            set -e
 
-          echo "Updating system packages..."
-          sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
+            echo "Updating system packages..."
+            sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
 
-          # # echo "Cloning or updating project..."
-          # cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app
-          # cd ~/flask-app
-          # git pull origin main
+            # # echo "Cloning or updating project..."
+            # cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app
+            # cd ~/flask-app
+            # git pull origin main
 
-          echo "Installing Python dependencies..."
-          pip3 install --upgrade pip
-          pip3 install -r requirements.txt
+            echo "Installing Python dependencies..."
+            pip3 install --upgrade pip
+            pip3 install -r requirements.txt
 
-          echo "Stopping existing Gunicorn process if any..."
-          pkill gunicorn || true
+            echo "Stopping existing Gunicorn process if any..."
+            pkill gunicorn || true
 
-          echo "Starting app using Gunicorn..."
-          nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon
+            echo "Starting app using Gunicorn..."
+            nohup gunicorn app:app --bind 0.0.0.0:5000 --daemon
 
-          echo "Deployment complete. Showing logs:"
-          sleep 2
-          tail -n 20 nohup.out || echo "No log output yet."
-        EOF
-      env:
-        PROD_SECRET: ${{ secrets.PROD_SECRET }}
+            echo "Deployment complete. Showing logs:"
+            sleep 2
+            tail -n 20 nohup.out || echo "No log output yet."
+          EOF
+        env:
+          PROD_SECRET: ${{ secrets.PROD_SECRET }}

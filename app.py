@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello from Flask in Docker!"
+    return "Production Server | Hello from Flask in Docker!"
 def test_client():
     with app.test_client() as client:
         response = client.get("/")

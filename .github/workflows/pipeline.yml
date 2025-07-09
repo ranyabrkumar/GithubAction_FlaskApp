@@ -22,9 +22,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to Staging
-              run: echo "Deploying to staging..."
               env:
                 STAGING_SECRET: ${{ secrets.STAGING_SECRET }}
+              run: |
+                echo "Deploying to staging..."
+                # Deploy to production only on release creation
+                nohup python app.py deploy --env staging & 
+                echo "Staging deployment complete."
+
 
     deploy-production:
         needs: build-test
@@ -32,6 +37,11 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Deploy to Production
-              run: echo "Deploying to production..."
               env:
                 PROD_SECRET: ${{ secrets.PROD_SECRET }}
+              run: |
+                echo "Deploying to production..."
+                # Deploy to production only on release creation
+                nohup python app.py deploy --env production &
+                echo "Production deployment complete."
+    

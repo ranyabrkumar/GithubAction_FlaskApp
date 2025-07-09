@@ -42,6 +42,7 @@ jobs:
                 PROD_SECRET: ${{ secrets.PROD_SECRET }}
               run: |
                 echo "Deploying to production..."
+                pip install -r requirements.txt
                 cd ${{ github.workspace }}
                 # Ensure the app is ready for production
                 pwd

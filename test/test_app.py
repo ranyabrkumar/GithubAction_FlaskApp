@@ -1,5 +1,5 @@
 import pytest
-from app import app
+import app
 def test_hello():
     assert True  # This is a placeholder test that always passes
 def test_client():

@@ -59,7 +59,7 @@ jobs:
 
             echo "Stopping existing Gunicorn process if any..."
             pkill gunicorn || true
-            if ! curl --fail http://34.220.116.134:5000/; then
+            if ! curl --fail http://localhost:5000/; then
               echo "App not reachable. Proceeding ..."
               # next command goes here
             fi
@@ -68,7 +68,7 @@ jobs:
             nohup venv/bin/gunicorn app:app --bind 0.0.0.0:5000 > logs.txt 2>&1 &
 
             echo "Deployment complete. Showing logs:"
-            curl http://34.220.116.134:5000/
+            curl http://34.220.116.134localhost:5000/
 
           EOF
         env:

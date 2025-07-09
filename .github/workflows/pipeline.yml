@@ -39,11 +39,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ec2-34-220-116-134.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+          ssh-keyscan -H ec2-54-188-9-224.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Deploy and Setup EC2
         run: |
-          ssh ubuntu@ec2-34-220-116-134.us-west-2.compute.amazonaws.com << 'EOF'
+          ssh ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
             set -e
 
             echo "Updating system packages..."
@@ -68,7 +68,7 @@ jobs:
             nohup venv/bin/gunicorn app:app --bind 0.0.0.0:5000 > logs.txt 2>&1 &
 
             echo "Deployment complete. Showing logs:"
-            curl http://34.220.116.134localhost:5000/
+            curl http://localhost:5000/
 
           EOF
         env:

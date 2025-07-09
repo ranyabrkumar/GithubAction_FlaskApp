@@ -36,11 +36,16 @@ jobs:
         if: github.ref_name == 'main'
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
             - name: Deploy to Production
               env:
                 PROD_SECRET: ${{ secrets.PROD_SECRET }}
               run: |
                 echo "Deploying to production..."
+                cd ${{ github.workspace }}
+                # Ensure the app is ready for production
+                pwd
+                ls -la
                 # Deploy to production only on release creation
                 nohup python app.py deploy --env production &
                 echo "Production deployment complete."

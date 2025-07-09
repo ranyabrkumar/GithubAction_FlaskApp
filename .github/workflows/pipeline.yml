@@ -50,4 +50,6 @@ jobs:
                 # Deploy to production only on release creation
                 nohup python app.py deploy --env production &
                 echo "Production deployment complete."
+                ps aux | grep app.py
+                tail -f nohup.out
     

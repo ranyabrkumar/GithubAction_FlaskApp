@@ -51,11 +51,6 @@ jobs:
             cd flask-app
             ls -lrta
 
-            # # echo "Cloning or updating project..."
-            # cd ~/flask-app || git clone https://github.com/${{ github.repository }} ~/flask-app
-            # cd ~/flask-app
-            # git pull origin main
-
             echo "Installing Python dependencies..."
             python3 -m venv venv
             source venv/bin/activate

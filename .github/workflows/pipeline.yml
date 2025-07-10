@@ -43,7 +43,7 @@ jobs:
             echo "Entering project directory..."
             
             git clone -b staging https://github.com/ranyabrkumar/GithubAction_FlaskApp.git
-            cd /GithubAction_FlaskApp
+            cd GithubAction_FlaskApp
             echo "============================================="
             echo "Setting up Python environment..."
             echo "============================================="
@@ -109,7 +109,7 @@ jobs:
 
             echo "Entering project directory..."
             git clone https://github.com/ranyabrkumar/GithubAction_FlaskApp.git
-            cd /GithubAction_FlaskApp
+            cd GithubAction_FlaskApp
             
             echo "============================================="
             echo "Setting up Python environment..."

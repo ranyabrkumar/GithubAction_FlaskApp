@@ -92,7 +92,7 @@ jobs:
 
   deploy-production:
     needs: build-test
-    if: github.ref_name == 'main'
+    if: github.event_name == 'release'
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4

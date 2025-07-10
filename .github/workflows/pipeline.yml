@@ -19,7 +19,8 @@ jobs:
 
   deploy-staging:
     needs: build-test
-    if: github.ref_name == 'staging' and github.event_name == 'push'
+    if: github.ref_name == 'staging' && github.event_name == 'push'
+
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4

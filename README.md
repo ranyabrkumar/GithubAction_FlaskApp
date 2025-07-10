@@ -87,14 +87,23 @@ git push origin v1.0.0
 ```
 Then, go to GitHub → Releases → "Draft a new release" and select the tag. Creating the release will trigger the production deployment.
 
+---
+## Workflow logs:
+
+---
 <img width="2114" height="686" alt="image" src="https://github.com/user-attachments/assets/eeacfded-7ee0-499d-8785-ce1dc8042505" />
 
 ---
-
 <img width="1299" height="189" alt="image" src="https://github.com/user-attachments/assets/54468841-1fc7-4e6a-b97e-318b7f84b85c" />
 
+---
 <img width="1786" height="887" alt="image" src="https://github.com/user-attachments/assets/e0a567ce-ec5d-4b1c-8f15-dd07e7924b45" />
+
+---
 <img width="2203" height="947" alt="image" src="https://github.com/user-attachments/assets/6a3ae37c-24ff-48a5-b6d4-577b4b1fdbf3" />
 
+---
+## Email notification:
+  <img width="836" height="525" alt="image" src="https://github.com/user-attachments/assets/1946517c-e8e0-4556-8100-3914353d903f" />
 
 

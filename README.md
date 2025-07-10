@@ -22,6 +22,8 @@ The goal is to automatically:
 The GitHub Actions workflow file is located at:
 
 .github/workflows/pipeline.yml
+using : self-hosted runner:
+<img width="833" height="186" alt="image" src="https://github.com/user-attachments/assets/c07b8d12-ec7a-49fa-8ff6-50968d407c8c" />
 
 
 It runs the following steps:
@@ -90,3 +92,9 @@ Then, go to GitHub → Releases → "Draft a new release" and select the tag. Cr
 ---
 
 <img width="1299" height="189" alt="image" src="https://github.com/user-attachments/assets/54468841-1fc7-4e6a-b97e-318b7f84b85c" />
+
+<img width="1786" height="887" alt="image" src="https://github.com/user-attachments/assets/e0a567ce-ec5d-4b1c-8f15-dd07e7924b45" />
+<img width="2203" height="947" alt="image" src="https://github.com/user-attachments/assets/6a3ae37c-24ff-48a5-b6d4-577b4b1fdbf3" />
+
+
+

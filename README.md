@@ -73,6 +73,7 @@ git push origin staging
 ```
 
 <img width="1393" height="552" alt="image" src="https://github.com/user-attachments/assets/de5624bb-6291-4a97-9b25-284b19bac92f" />
+
 ---
 
 ### Deploying to Production
@@ -85,3 +86,7 @@ git push origin v1.0.0
 Then, go to GitHub → Releases → "Draft a new release" and select the tag. Creating the release will trigger the production deployment.
 
 <img width="2114" height="686" alt="image" src="https://github.com/user-attachments/assets/eeacfded-7ee0-499d-8785-ce1dc8042505" />
+
+---
+
+<img width="1299" height="189" alt="image" src="https://github.com/user-attachments/assets/54468841-1fc7-4e6a-b97e-318b7f84b85c" />

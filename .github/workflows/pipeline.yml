@@ -54,9 +54,11 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
             echo "============================================="
-            echo "Stopping Gunicorn if running..."
+
+            echo "Stopping flask app if running..."
             echo "============================================="
-            pkill gunicorn || true
+            pkill python || true
+
             echo "============================================="
             echo " Checking if app is down before restart..."
             echo "============================================="
@@ -66,9 +68,11 @@ jobs:
               echo "App still reachable, continuing deployment anyway."
             fi
             echo "============================================="
-            echo "Starting Gunicorn..."
+
+            echo "Starting flask app..."
             echo "============================================="
-            nohup venv/bin/gunicorn app:app --bind 0.0.0.0:6000 > logs.txt 2>&1 &
+            nohup venv/bin/python app.py> logs.txt 2>&1 &
+
 
             echo " Waiting for app to start..."
             sleep 5
@@ -110,6 +114,7 @@ jobs:
             sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
 
             echo "Entering project directory..."
+
             #echo pwd
             if [ -d GithubAction_FlaskApp ]; then
               rm -rf GithubAction_FlaskApp

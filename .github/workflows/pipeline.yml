@@ -67,7 +67,7 @@ jobs:
 
   deploy-production:
     needs: build-test
-    if: github.event_name == 'release' || (github.ref_name == 'main' && github.event_name == 'push')
+    if: github.event_name == 'release' 
 
     runs-on: self-hosted
     steps:

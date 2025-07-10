@@ -54,9 +54,9 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
             echo "============================================="
-            echo "Stopping Gunicorn if running..."
+            echo "Stopping flask app if running..."
             echo "============================================="
-            pkill Flask || true
+            pkill python || true
             echo "============================================="
             echo " Checking if app is down before restart..."
             echo "============================================="
@@ -66,7 +66,7 @@ jobs:
               echo "App still reachable, continuing deployment anyway."
             fi
             echo "============================================="
-            echo "Starting Gunicorn..."
+            echo "Starting flask app..."
             echo "============================================="
             nohup venv/bin/python app.py> logs.txt 2>&1 &
 

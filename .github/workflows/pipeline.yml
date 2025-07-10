@@ -19,7 +19,7 @@ jobs:
 
   deploy-staging:
     needs: build-test
-    if: github.ref_name == 'staging'
+    if: github.ref_name == 'staging' and github.event_name == 'push'
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
@@ -31,60 +31,34 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ec2-54-188-9-224.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-      - name: Staging Deploy and Setup EC2
+      - name: Deploy to Staging EC2
         run: |
           ssh ubuntu@ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
             set -e
-            echo "============================================="
+
             echo "Updating system packages..."
-            echo "============================================="
             sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
 
-            echo "Entering project directory..."
-            if [ -d GithubAction_FlaskApp ]; then
-              rm -rf GithubAction_FlaskApp
-            fi
+            echo "Cloning staging branch..."
+            rm -rf GithubAction_FlaskApp || true
             git clone -b staging https://github.com/ranyabrkumar/GithubAction_FlaskApp.git
             cd GithubAction_FlaskApp
-            echo "============================================="
-            echo "Setting up Python environment..."
-            echo "============================================="
+
+            echo "Setting up virtual environment..."
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
-            echo "============================================="
 
-            echo "Stopping flask app if running..."
-            echo "============================================="
-            pkill python || true
+            echo "Stopping existing Flask app..."
+            pkill -f app.py || true
 
-            echo "============================================="
-            echo " Checking if app is down before restart..."
-            echo "============================================="
-            if ! curl --silent --fail http://localhost:6000/; then
-              echo " App not reachable. Safe to restart."
-            else
-              echo "App still reachable, continuing deployment anyway."
-            fi
-            echo "============================================="
+            echo "Starting Flask app on port 6000..."
+            nohup venv/bin/python app.py > logs.txt 2>&1 &
 
-            echo "Starting flask app..."
-            echo "============================================="
-            nohup venv/bin/python app.py> logs.txt 2>&1 &
-
-
-            echo " Waiting for app to start..."
+            echo "Waiting for app to start..."
             sleep 5
-            echo "============================================="
-            echo "Health check:"
-            echo "============================================="
-
             curl --fail http://localhost:6000/ || echo "App not responding"
-
-            echo "============================================="
-            echo " Last 10 lines of log:"
-            echo "============================================="
             tail -n 10 logs.txt || echo "No logs found."
           EOF
         env:
@@ -92,7 +66,7 @@ jobs:
 
   deploy-production:
     needs: build-test
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' or github.event_name == 'push'
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
@@ -104,60 +78,34 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ec2-54-188-9-224.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-      - name: Deploy and Setup EC2
+      - name: Deploy to Production EC2
         run: |
           ssh ubuntu@ec2-54-188-9-224.us-west-2.compute.amazonaws.com << 'EOF'
             set -e
-            echo "============================================="
+
             echo "Updating system packages..."
-            echo "============================================="
             sudo apt update && sudo apt install -y python3 python3-pip git curl build-essential
 
-            echo "Entering project directory..."
-
-            #echo pwd
-            if [ -d GithubAction_FlaskApp ]; then
-              rm -rf GithubAction_FlaskApp
-            fi
-
+            echo "Cloning production branch..."
+            rm -rf GithubAction_FlaskApp || true
             git clone https://github.com/ranyabrkumar/GithubAction_FlaskApp.git
             cd GithubAction_FlaskApp
-            
-            echo "============================================="
-            echo "Setting up Python environment..."
-            echo "============================================="
+
+            echo "Setting up virtual environment..."
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
-            echo "============================================="
-            echo "Stopping Gunicorn if running..."
-            echo "============================================="
+
+            echo "Stopping existing Gunicorn process..."
             pkill gunicorn || true
-            echo "============================================="
-            echo " Checking if app is down before restart..."
-            echo "============================================="
-            if ! curl --silent --fail http://localhost:5000/; then
-              echo " App not reachable. Safe to restart."
-            else
-              echo "App still reachable, continuing deployment anyway."
-            fi
-            echo "============================================="
-            echo "Starting Gunicorn..."
-            echo "============================================="
+
+            echo "Starting Gunicorn on port 5000..."
             nohup venv/bin/gunicorn app:app --bind 0.0.0.0:5000 > logs.txt 2>&1 &
 
-            echo " Waiting for app to start..."
+            echo "Waiting for app to start..."
             sleep 5
-            echo "============================================="
-            echo "Health check:"
-            echo "============================================="
-
             curl --fail http://localhost:5000/ || echo "App not responding"
-
-            echo "============================================="
-            echo " Last 10 lines of log:"
-            echo "============================================="
             tail -n 10 logs.txt || echo "No logs found."
           EOF
         env:

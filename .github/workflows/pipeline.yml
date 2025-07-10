@@ -56,7 +56,7 @@ jobs:
             echo "============================================="
             echo "Stopping Gunicorn if running..."
             echo "============================================="
-            pkill gunicorn || true
+            pkill Flask || true
             echo "============================================="
             echo " Checking if app is down before restart..."
             echo "============================================="
@@ -68,7 +68,7 @@ jobs:
             echo "============================================="
             echo "Starting Gunicorn..."
             echo "============================================="
-            nohup venv/bin/gunicorn app:app --bind 0.0.0.0:6000 > logs.txt 2>&1 &
+            nohup venv/bin/python app.py> logs.txt 2>&1 &
 
             echo " Waiting for app to start..."
             sleep 5

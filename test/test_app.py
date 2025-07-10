@@ -16,7 +16,6 @@ def test_hello():
 #Functional test: checks if the root endpoint returns status 200
 def test_client():
     print("Starting test_client...")
-
     # Create a test client using Flask's built-in method
     with app.app.test_client() as client:
         response = client.get("/")
